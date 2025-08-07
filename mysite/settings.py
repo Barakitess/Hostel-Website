@@ -37,6 +37,9 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "Update_profile_api",  # Assuming 'api' is the name of your app
+    "rest_framework",  # If you're using Django REST Framework
+    'complaints_api',  # Assuming 'Complaints_api' is the name of your app
 ]
 
 MIDDLEWARE = [
