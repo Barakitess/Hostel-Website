@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Profile Dashboard</title>
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --sidebar-bg: #ffffff;
+            --content-bg: #ffffff;
+            --muted-text: #64748b;
+            --text-color: #0f172a;
+            --primary-color: #3b82f6;
+            --primary-text: #ffffff;
+            --border-color: #e2e8f0;
+            --gradient-start: #667eea;
+            --gradient-end: #764ba2;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --mono: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--mono);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Tab Content Visibility */
+        .about-section {
+            display: block;
+        }
+
+        .complaint-section {
+            display: none;
+        }
+
+        .complaint-section.active {
+            display: block;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            padding: 32px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .profile-section {
+            text-align: center;
+            width: 100%;
+        }
+
+        .profile-image-container {
+            margin-bottom: 24px;
+        }
+
+        .profile-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+        }
+
+        .profile-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .profile-image-placeholder {
+            font-size: 48px;
+            color: var(--primary-text);
+            font-weight: 600;
+        }
+
+        .profile-name {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text-color);
+        }
+
+        .profile-title {
+            font-size: 16px;
+            color: var(--muted-text);
+            font-weight: 500;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 40px;
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .tabs-container {
+            display: flex;
+            gap: 8px;
+            background: #f1f5f9;
+            padding: 8px;
+            border-radius: 16px;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--muted-text);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: var(--mono);
+        }
+
+        .tab-btn.active {
+            background: var(--primary-color);
+            color: var(--primary-text);
+            box-shadow: var(--shadow);
+        }
+
+        .tab-btn:hover:not(.active) {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--primary-color);
+        }
+
+        .tab-content {
+            margin-top: 32px;
+        }
+
+        .details-section {
+            margin-bottom: 32px;
+        }
+
+        .section-header {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .details-card {
+            background: var(--content-bg);
+            border-radius: 20px;
+            padding: 32px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        /* Single column layout for details */
+        .details-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-size: 15px;
+            color: var(--muted-text);
+            font-weight: 500;
+        }
+
+        .detail-value {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-color);
+            text-align: right;
+        }
+
+        .detail-value a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: opacity 0.2s ease;
+        }
+
+        .detail-value a:hover {
+            opacity: 0.8;
+        }
+
+        .complaints-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .stats-container {
+            display: flex;
+            gap: 16px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            color: var(--primary-text);
+            padding: 20px 24px;
+            border-radius: 16px;
+            text-align: center;
+            min-width: 90px;
+            box-shadow: var(--shadow);
+            flex: 1;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
+
+        .complaint-card {
+            background: var(--content-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 32px;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+        }
+
+        .complaint-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+
+        .complaint-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 24px;
+        }
+
+        .complaint-meta h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 8px;
+        }
+
+        .complaint-date {
+            font-size: 14px;
+            color: var(--muted-text);
+            font-weight: 500;
+        }
+
+        .status-badge {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-in-progress {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-resolved {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .complaint-content {
+            margin-bottom: 24px;
+        }
+
+        .category-tag {
+            display: inline-block;
+            background: #f1f5f9;
+            color: var(--text-color);
+            padding: 6px 16px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+        }
+
+        .complaint-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .complaint-description {
+            color: var(--muted-text);
+            line-height: 1.6;
+            font-size: 15px;
+        }
+
+        .complaint-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 20px;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .priority-badge {
+            padding: 6px 16px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .priority-high {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 32px;
+            height: 32px;
+            border: 3px solid var(--border-color);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+            margin: 40px auto;
+        }
+
+        .loading-spinner.show {
+            display: block;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 260px;
+            }
+
+            .main-content {
+                margin-left: 260px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                position: relative;
+                height: auto;
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+                padding: 24px;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+                gap: 20px;
+            }
+
+            .profile-section {
+                display: flex;
+                align-items: center;
+                gap: 20px;
+                text-align: left;
+            }
+
+            .profile-image-container {
+                margin-bottom: 0;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 24px;
+            }
+
+            .profile-image {
+                width: 80px;
+                height: 80px;
+            }
+
+            .profile-image-placeholder {
+                font-size: 32px;
+            }
+
+            .profile-name {
+                font-size: 24px;
+                margin-bottom: 4px;
+            }
+
+            .profile-title {
+                font-size: 14px;
+            }
+
+            .content-header {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+
+            .complaints-header {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+
+            .stats-container {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="profile-section">
+                <div class="profile-image-container">
+                    <div class="profile-image" id="profileImageContainer">
+                        <div class="profile-image-placeholder" id="profilePlaceholder">M</div>
+                    </div>
+                </div>
+                <div>
+                    <div class="profile-name">Mayank</div>
+                    <div class="profile-title">Sophomore</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="content-header">
+                <h1 class="page-title">Student Profile</h1>
+                <div class="tabs-container">
+                    <button class="tab-btn active" onclick="showTab('about')">Details</button>
+                    <button class="tab-btn" onclick="showTab('complaints')">Complaints</button>
+                </div>
+            </div>
+
+            <div class="tab-content">
+                <div id="aboutTab" class="about-section">
+                    <div class="details-section">
+                        <div class="section-header">Personal Information</div>
+                        <div class="details-card">
+                            <div class="details-grid">
+                                <div class="detail-item">
+                                    <div class="detail-label">User ID</div>
+                                    <div class="detail-value">student</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-label">Name</div>
+                                    <div class="detail-value">Mayank</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-label">Roll No</div>
+                                    <div class="detail-value">240102034</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-label">Outlook ID</div>
+                                    <div class="detail-value">
+                                        <a href="mailto:mayank@alpha.ac.in">mayank@alpha.ac.in</a>
+                                    </div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-label">Phone Number</div>
+                                    <div class="detail-value">32133123</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-label">Room No</div>
+                                    <div class="detail-value">B123</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="complaintsTab" class="complaint-section">
+                    <div class="complaints-header">
+                        <h2 class="section-title">My Complaints</h2>
+                        <div class="stats-container">
+                            <div class="stat-card">
+                                <span class="stat-number" id="totalComplaints">0</span>
+                                <span class="stat-label">Total</span>
+                            </div>
+                            <div class="stat-card">
+                                <span class="stat-number" id="pendingComplaints">0</span>
+                                <span class="stat-label">Pending</span>
+                            </div>
+                            <div class="stat-card">
+                                <span class="stat-number" id="resolvedComplaints">0</span>
+                                <span class="stat-label">Resolved</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="loading-spinner" id="complaintsLoader"></div>
+                    <div id="complaintsContainer">
+                        <!-- Complaints will be loaded here dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class ProfileAPI {
+            constructor() {
+                // Replace with our actual API base URL
+                this.baseURL = 'https://your-api-domain.com/api';
+            }
+
+            async getProfile() {
+                try {
+                    const response = await fetch(`${this.baseURL}/profile`, {
+                        headers: {
+                            'Authorization': `Bearer ${sessionStorage.getItem('authToken')}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        return {
+                            success: true,
+                            data: data
+                        };
+                    } else {
+                        return {
+                            success: false,
+                            message: data.message || 'Failed to load profile'
+                        };
+                    }
+                } catch (error) {
+                    console.error('Profile API Error:', error);
+                    return {
+                        success: false,
+                        message: 'Network error. Please try again.'
+                    };
+                }
+            }
+
+            async getComplaints() {
+                try {
+                    const response = await fetch(`${this.baseURL}/complaints`, {
+                        headers: {
+                            'Authorization': `Bearer ${sessionStorage.getItem('authToken')}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        return {
+                            success: true,
+                            data: data.complaints || []
+                        };
+                    } else {
+                        return {
+                            success: false,
+                            message: data.message || 'Failed to load complaints'
+                        };
+                    }
+                } catch (error) {
+                    console.error('Complaints API Error:', error);
+                    return {
+                        success: false,
+                        message: 'Network error. Please try again.'
+                    };
+                }
+            }
+
+            async uploadProfileImage(imageFile) {
+                try {
+                    const formData = new FormData();
+                    formData.append('profileImage', imageFile);
+
+                    const response = await fetch(`${this.baseURL}/profile/image`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${sessionStorage.getItem('authToken')}`
+                        },
+                        body: formData
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        return {
+                            success: true,
+                            imageUrl: data.imageUrl
+                        };
+                    } else {
+                        return {
+                            success: false,
+                            message: data.message || 'Failed to upload image'
+                        };
+                    }
+                } catch (error) {
+                    console.error('Image upload error:', error);
+                    return {
+                        success: false,
+                        message: 'Network error. Please try again.'
+                    };
+                }
+            }
+        }
+
+        class ProfileManager {
+            constructor() {
+                this.api = new ProfileAPI();
+                this.complaints = [];
+                this.init();
+            }
+
+            async init() {
+                await this.loadProfile();
+            }
+
+            async loadProfile() {
+                try {
+                    const result = await this.api.getProfile();
+                    if (result.success) {
+                        this.updateProfileData(result.data);
+                        if (result.data.profileImage) {
+                            this.updateProfileImage(result.data.profileImage);
+                        }
+                    } else {
+                        console.error('Failed to load profile:', result.message);
+                    }
+                } catch (error) {
+                    console.error('Failed to load profile:', error);
+                }
+            }
+
+            async loadComplaints() {
+                const loader = document.getElementById('complaintsLoader');
+                const container = document.getElementById('complaintsContainer');
+
+                loader.classList.add('show');
+                container.innerHTML = '';
+
+                try {
+                    const result = await this.api.getComplaints();
+                    if (result.success) {
+                        this.complaints = result.data;
+                        this.renderComplaints();
+                        this.updateComplaintStats();
+                    } else {
+                        container.innerHTML = `<div class="complaint-card"><p>Failed to load complaints: ${result.message}</p></div>`;
+                    }
+                } catch (error) {
+                    console.error('Failed to load complaints:', error);
+                    container.innerHTML = '<div class="complaint-card"><p>Failed to load complaints. Please try again later.</p></div>';
+                } finally {
+                    loader.classList.remove('show');
+                }
+            }
+
+            updateProfileData(profileData) {
+                // Update profile information in the details tab
+                const detailsGrid = document.querySelector('.details-grid');
+                if (detailsGrid && profileData) {
+                    // Update individual fields if they exist in the response
+                    const fields = {
+                        'User ID': profileData.userId,
+                        'Name': profileData.name,
+                        'Roll No': profileData.rollNo,
+                        'Outlook ID': profileData.outlookId,
+                        'Phone Number': profileData.phoneNumber,
+                        'Room No': profileData.roomNo
+                    };
+
+                    detailsGrid.querySelectorAll('.detail-item').forEach(item => {
+                        const label = item.querySelector('.detail-label').textContent;
+                        const valueElement = item.querySelector('.detail-value');
+
+                        if (fields[label]) {
+                            if (label === 'Outlook ID') {
+                                valueElement.innerHTML = `<a href="mailto:${fields[label]}">${fields[label]}</a>`;
+                            } else {
+                                valueElement.textContent = fields[label];
+                            }
+                        }
+                    });
+                }
+            }
+
+            renderComplaints() {
+                const container = document.getElementById('complaintsContainer');
+
+                if (this.complaints.length === 0) {
+                    container.innerHTML = '<div class="complaint-card"><p>No complaints found.</p></div>';
+                    return;
+                }
+
+                container.innerHTML = this.complaints.map(complaint => `
+                    <div class="complaint-card">
+                        <div class="complaint-header">
+                            <div class="complaint-meta">
+                                <h3>${complaint.id}</h3>
+                                <div class="complaint-date">${complaint.date}</div>
+                            </div>
+                            <span class="status-badge status-${complaint.status}">${this.formatStatus(complaint.status)}</span>
+                        </div>
+                        <div class="complaint-content">
+                            <span class="category-tag">${this.formatCategory(complaint.category)}</span>
+                            <div class="complaint-title">${complaint.subject}</div>
+                            <div class="complaint-description">${complaint.description}</div>
+                        </div>
+                        <div class="complaint-footer">
+                            <span class="priority-badge priority-${complaint.priority}">${this.formatPriority(complaint.priority)} Priority</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            updateComplaintStats() {
+                const total = this.complaints.length;
+                const pending = this.complaints.filter(c => c.status === 'pending').length;
+                const resolved = this.complaints.filter(c => c.status === 'resolved').length;
+
+                document.getElementById('totalComplaints').textContent = total;
+                document.getElementById('pendingComplaints').textContent = pending;
+                document.getElementById('resolvedComplaints').textContent = resolved;
+            }
+
+            formatStatus(status) {
+                return status.charAt(0).toUpperCase() + status.slice(1).replace('-', ' ');
+            }
+
+            formatCategory(category) {
+                return category.charAt(0).toUpperCase() + category.slice(1);
+            }
+
+            formatPriority(priority) {
+                return priority.charAt(0).toUpperCase() + priority.slice(1);
+            }
+
+            updateProfileImage(imageUrl) {
+                const container = document.getElementById('profileImageContainer');
+                const placeholder = document.getElementById('profilePlaceholder');
+
+                if (imageUrl) {
+                    placeholder.style.display = 'none';
+                    const img = document.createElement('img');
+                    img.src = imageUrl;
+                    img.alt = 'Profile';
+                    container.appendChild(img);
+                } else {
+                    placeholder.style.display = 'flex';
+                    const existingImg = container.querySelector('img');
+                    if (existingImg) {
+                        existingImg.remove();
+                    }
+                }
+            }
+        }
+
+        // Global UI functions
+        function showTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Show/hide content
+            if (tabName === 'about') {
+                document.getElementById('aboutTab').style.display = 'block';
+                document.getElementById('complaintsTab').classList.remove('active');
+                document.getElementById('complaintsTab').style.display = 'none';
+            } else {
+                document.getElementById('aboutTab').style.display = 'none';
+                document.getElementById('complaintsTab').classList.add('active');
+                document.getElementById('complaintsTab').style.display = 'block';
+
+                // Load complaints when tab is opened
+                if (window.profileManager && window.profileManager.complaints.length === 0) {
+                    window.profileManager.loadComplaints();
+                }
+            }
+        }
+
+        // Initialize application
+        document.addEventListener('DOMContentLoaded', () => {
+            window.profileManager = new ProfileManager();
+        });
+    </script>
+</body>
+
+</html>
