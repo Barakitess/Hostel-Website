@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Member Signup</title>
+    <style>
+        :root {
+            --bg-color: #f5f7fb;
+            --form-bg: #ffffff;
+            --muted-text: #707d86;
+            --text-color: #333333;
+            --primary-color: #3b82f6;
+            --primary-text: #ffffff;
+            --ghost-bg: transparent;
+            --ghost-text: #707d86;
+            --gradient-start: #3b82f6;
+            --gradient-end: #06b6d4;
+            --font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 20px 0;
+        }
+
+        .signup-container {
+            background: var(--form-bg);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .signup-title {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 40px;
+        }
+
+        .input-group {
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: var(--font-family);
+            background: var(--form-bg);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .input-field:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .input-field::placeholder {
+            color: var(--muted-text);
+            font-weight: 400;
+        }
+
+        .input-field.valid {
+            border-color: #10b981;
+        }
+
+        .input-field.invalid {
+            border-color: #ef4444;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--muted-text);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 4px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            z-index: 10;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .password-toggle:hover {
+            color: var(--primary-color);
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .password-toggle svg {
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .field-validation {
+            font-size: 12px;
+            margin-top: 6px;
+            padding: 0 4px;
+            min-height: 16px;
+        }
+
+        .validation-success {
+            color: #10b981;
+        }
+
+        .validation-error {
+            color: #ef4444;
+        }
+
+        .password-strength {
+            margin-top: 8px;
+            padding: 0 4px;
+        }
+
+        .strength-bar {
+            width: 100%;
+            height: 4px;
+            background: #e5e7eb;
+            border-radius: 2px;
+            overflow: hidden;
+            margin: 4px 0;
+        }
+
+        .strength-fill {
+            height: 100%;
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .strength-weak .strength-fill {
+            width: 25%;
+            background: #ef4444;
+        }
+
+        .strength-fair .strength-fill {
+            width: 50%;
+            background: #f59e0b;
+        }
+
+        .strength-good .strength-fill {
+            width: 75%;
+            background: #3b82f6;
+        }
+
+        .strength-strong .strength-fill {
+            width: 100%;
+            background: #10b981;
+        }
+
+        .strength-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .signup-button {
+            width: 100%;
+            background: var(--primary-color);
+            color: var(--primary-text);
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            font-family: var(--font-family);
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            margin-top: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .signup-button:hover:not(:disabled) {
+            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .signup-button:active {
+            transform: translateY(0);
+        }
+
+        .signup-button:disabled {
+            background: var(--muted-text);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .login-section {
+            text-align: center;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .login-text {
+            color: var(--muted-text);
+            font-size: 14px;
+            font-family: var(--font-family);
+        }
+
+        .login-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            margin-left: 4px;
+        }
+
+        .login-link:hover {
+            color: var(--gradient-end);
+            text-decoration: underline;
+        }
+
+        .error-message {
+            color: #ef4444;
+            font-size: 14px;
+            margin-top: 16px;
+            padding: 12px 16px;
+            background: rgba(239, 68, 68, 0.1);
+            border-radius: 8px;
+            display: none;
+            border-left: 4px solid #ef4444;
+        }
+
+        .success-message {
+            color: #10b981;
+            font-size: 14px;
+            margin-top: 16px;
+            padding: 12px 16px;
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 8px;
+            display: none;
+            border-left: 4px solid #10b981;
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .signup-container {
+                margin: 20px;
+                padding: 30px 25px;
+            }
+
+            .signup-title {
+                font-size: 24px;
+                margin-bottom: 30px;
+            }
+
+            .input-field {
+                padding: 14px 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="signup-container">
+        <h1 class="signup-title">Create Account</h1>
+
+        <form id="signupForm">
+            <div class="input-group">
+                <input type="text" id="username" class="input-field" placeholder="Username" required>
+                <div class="field-validation" id="usernameValidation"></div>
+            </div>
+
+            <div class="input-group">
+                <input type="email" id="outlookId" class="input-field" placeholder="Outlook ID" required>
+                <div class="field-validation" id="outlookValidation"></div>
+            </div>
+
+            <div class="input-group">
+                <input type="text" id="rollNo" class="input-field" placeholder="Roll Number" required>
+                <div class="field-validation" id="rollNoValidation"></div>
+            </div>
+
+            <div class="input-group">
+                <input type="password" id="password" class="input-field" placeholder="Password" required>
+                <button type="button" class="password-toggle" id="passwordToggle" title="Show Password">
+                    <svg id="eyeIcon" viewBox="0 0 24 24">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                        <circle cx="12" cy="12" r="3" />
+                    </svg>
+                </button>
+                <div class="password-strength" id="passwordStrength" style="display: none;">
+                    <div class="strength-bar">
+                        <div class="strength-fill"></div>
+                    </div>
+                    <div class="strength-label"></div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <input type="password" id="confirmPassword" class="input-field" placeholder="Confirm Password" required>
+                <div class="field-validation" id="confirmPasswordValidation"></div>
+            </div>
+
+            <button type="submit" class="signup-button" id="signupBtn">
+                <span class="loading-spinner" id="loadingSpinner"></span>
+                <span id="buttonText">CREATE ACCOUNT</span>
+            </button>
+
+            <div class="error-message" id="errorMessage"></div>
+            <div class="success-message" id="successMessage"></div>
+        </form>
+
+        <div class="login-section">
+            <span class="login-text">Already have an account? </span>
+            <a href="#" class="login-link">Login</a>
+        </div>
+    </div>
+
+    <script>
+        class SignupAPI {
+            constructor() {
+                // Replace with your actual API base URL
+                this.baseURL = 'https://your-api-domain.com/api';
+            }
+
+            async signup(userData) {
+                try {
+                    const response = await fetch(`${this.baseURL}/auth/signup`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(userData)
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        return {
+                            success: true,
+                            user: data.user,
+                            message: data.message || 'Account created successfully!'
+                        };
+                    } else {
+                        return {
+                            success: false,
+                            message: data.message || 'Failed to create account'
+                        };
+                    }
+                } catch (error) {
+                    console.error('Signup API Error:', error);
+                    return {
+                        success: false,
+                        message: 'Network error. Please try again.'
+                    };
+                }
+            }
+
+            async checkUsernameAvailability(username) {
+                try {
+                    const response = await fetch(`${this.baseURL}/auth/check-username`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ username })
+                    });
+
+                    const data = await response.json();
+                    return {
+                        available: data.available
+                    };
+                } catch (error) {
+                    console.error('Username check error:', error);
+                    return { available: false };
+                }
+            }
+        }
+
+        class SignupValidator {
+            static validateUsername(username) {
+                if (!username) return { valid: false, message: 'Username is required' };
+                if (username.length < 3) return { valid: false, message: 'Username must be at least 3 characters' };
+                if (username.length > 20) return { valid: false, message: 'Username must be less than 20 characters' };
+                if (!/^[a-zA-Z0-9_]+$/.test(username)) return { valid: false, message: 'Username can only contain letters, numbers, and underscores' };
+                return { valid: true, message: 'Username looks good!' };
+            }
+
+            static validateOutlookId(email) {
+                if (!email) return { valid: false, message: 'Outlook ID is required' };
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) return { valid: false, message: 'Please enter a valid email address' };
+                if (!email.includes('university.edu') && !email.includes('outlook') && !email.includes('edu')) {
+                    return { valid: false, message: 'Please use a university or outlook email address' };
+                }
+                return { valid: true, message: 'Email format is valid' };
+            }
+
+            static validateRollNo(rollNo) {
+                if (!rollNo) return { valid: false, message: 'Roll number is required' };
+                if (rollNo.length < 6) return { valid: false, message: 'Roll number seems too short' };
+                if (rollNo.length > 15) return { valid: false, message: 'Roll number seems too long' };
+                // Basic pattern for roll number (year + department + number)
+                if (!/^[0-9]{4}[A-Z]{2,4}[0-9]{3,4}$/i.test(rollNo)) {
+                    return { valid: false, message: 'Roll number format: YYYYDEPT001 (e.g., 2024CSE001)' };
+                }
+                return { valid: true, message: 'Roll number format is valid' };
+            }
+
+            static validatePassword(password) {
+                if (!password) return { valid: false, message: 'Password is required', strength: 'weak' };
+                if (password.length < 8) return { valid: false, message: 'Password must be at least 8 characters', strength: 'weak' };
+
+                let strength = 'weak';
+                let score = 0;
+
+                if (password.length >= 8) score++;
+                if (/[a-z]/.test(password)) score++;
+                if (/[A-Z]/.test(password)) score++;
+                if (/[0-9]/.test(password)) score++;
+                if (/[^a-zA-Z0-9]/.test(password)) score++;
+
+                if (score <= 2) strength = 'weak';
+                else if (score <= 3) strength = 'fair';
+                else if (score <= 4) strength = 'good';
+                else strength = 'strong';
+
+                const isValid = score >= 3;
+                const message = isValid ? `Password strength: ${strength}` : 'Password needs uppercase, lowercase, number, and special character';
+
+                return { valid: isValid, message, strength };
+            }
+
+            static validateConfirmPassword(password, confirmPassword) {
+                if (!confirmPassword) return { valid: false, message: 'Please confirm your password' };
+                if (password !== confirmPassword) return { valid: false, message: 'Passwords do not match' };
+                return { valid: true, message: 'Passwords match' };
+            }
+        }
+
+        class SignupManager {
+            constructor() {
+                this.api = new SignupAPI();
+                this.validationState = {
+                    username: false,
+                    outlookId: false,
+                    rollNo: false,
+                    password: false,
+                    confirmPassword: false
+                };
+                this.initializeEventListeners();
+            }
+
+            initializeEventListeners() {
+                const form = document.getElementById('signupForm');
+                const passwordToggle = document.getElementById('passwordToggle');
+                const passwordField = document.getElementById('password');
+
+                form.addEventListener('submit', (e) => this.handleSignup(e));
+
+                // Password toggle functionality
+                passwordToggle.addEventListener('click', () => {
+                    const eyeIcon = document.getElementById('eyeIcon');
+
+                    if (passwordField.type === 'password') {
+                        passwordField.type = 'text';
+                        passwordToggle.title = 'Hide Password';
+                        eyeIcon.innerHTML = `
+                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                            <line x1="1" y1="1" x2="23" y2="23"/>
+                        `;
+                    } else {
+                        passwordField.type = 'password';
+                        passwordToggle.title = 'Show Password';
+                        eyeIcon.innerHTML = `
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        `;
+                    }
+                });
+
+                // Field validations
+                this.setupFieldValidation('username', SignupValidator.validateUsername);
+                this.setupFieldValidation('outlookId', SignupValidator.validateOutlookId);
+                this.setupFieldValidation('rollNo', SignupValidator.validateRollNo);
+                this.setupPasswordValidation();
+                this.setupConfirmPasswordValidation();
+            }
+
+            setupFieldValidation(fieldId, validator) {
+                const field = document.getElementById(fieldId);
+                const validationDiv = document.getElementById(`${fieldId}Validation`);
+
+                field.addEventListener('input', () => {
+                    const result = validator(field.value.trim());
+                    this.updateFieldValidation(field, validationDiv, result, fieldId);
+                });
+
+                field.addEventListener('blur', () => {
+                    if (fieldId === 'username' && field.value.trim()) {
+                        this.checkUsernameAvailability(field.value.trim());
+                    }
+                });
+            }
+
+            async checkUsernameAvailability(username) {
+                const field = document.getElementById('username');
+                const validationDiv = document.getElementById('usernameValidation');
+
+                if (!SignupValidator.validateUsername(username).valid) return;
+
+                validationDiv.textContent = 'Checking availability...';
+                validationDiv.className = 'field-validation';
+
+                const result = await this.api.checkUsernameAvailability(username);
+
+                if (result.available) {
+                    validationDiv.textContent = 'Username is available!';
+                    validationDiv.className = 'field-validation validation-success';
+                    field.classList.add('valid');
+                    field.classList.remove('invalid');
+                    this.validationState.username = true;
+                } else {
+                    validationDiv.textContent = 'Username is already taken';
+                    validationDiv.className = 'field-validation validation-error';
+                    field.classList.add('invalid');
+                    field.classList.remove('valid');
+                    this.validationState.username = false;
+                }
+                this.updateSubmitButton();
+            }
+
+            setupPasswordValidation() {
+                const passwordField = document.getElementById('password');
+                const strengthDiv = document.getElementById('passwordStrength');
+
+                passwordField.addEventListener('input', () => {
+                    const password = passwordField.value;
+                    const result = SignupValidator.validatePassword(password);
+
+                    if (password) {
+                        strengthDiv.style.display = 'block';
+                        this.updatePasswordStrength(result.strength, result.message);
+                    } else {
+                        strengthDiv.style.display = 'none';
+                    }
+
+                    this.validationState.password = result.valid;
+                    this.updateSubmitButton();
+
+                    // Revalidate confirm password if it exists
+                    const confirmPassword = document.getElementById('confirmPassword').value;
+                    if (confirmPassword) {
+                        const confirmResult = SignupValidator.validateConfirmPassword(password, confirmPassword);
+                        this.updateFieldValidation(
+                            document.getElementById('confirmPassword'),
+                            document.getElementById('confirmPasswordValidation'),
+                            confirmResult,
+                            'confirmPassword'
+                        );
+                    }
+                });
+            }
+
+            setupConfirmPasswordValidation() {
+                const confirmPasswordField = document.getElementById('confirmPassword');
+                const validationDiv = document.getElementById('confirmPasswordValidation');
+
+                confirmPasswordField.addEventListener('input', () => {
+                    const password = document.getElementById('password').value;
+                    const confirmPassword = confirmPasswordField.value;
+                    const result = SignupValidator.validateConfirmPassword(password, confirmPassword);
+                    this.updateFieldValidation(confirmPasswordField, validationDiv, result, 'confirmPassword');
+                });
+            }
+
+            updateFieldValidation(field, validationDiv, result, fieldName) {
+                if (result.valid) {
+                    validationDiv.textContent = result.message;
+                    validationDiv.className = 'field-validation validation-success';
+                    field.classList.add('valid');
+                    field.classList.remove('invalid');
+                    this.validationState[fieldName] = true;
+                } else {
+                    validationDiv.textContent = result.message;
+                    validationDiv.className = 'field-validation validation-error';
+                    field.classList.add('invalid');
+                    field.classList.remove('valid');
+                    this.validationState[fieldName] = false;
+                }
+                this.updateSubmitButton();
+            }
+
+            updatePasswordStrength(strength, message) {
+                const strengthDiv = document.getElementById('passwordStrength');
+                const strengthBar = strengthDiv.querySelector('.strength-bar');
+                const strengthLabel = strengthDiv.querySelector('.strength-label');
+
+                strengthBar.className = `strength-bar strength-${strength}`;
+                strengthLabel.textContent = message;
+                strengthLabel.style.color = this.getStrengthColor(strength);
+            }
+
+            getStrengthColor(strength) {
+                const colors = {
+                    weak: '#ef4444',
+                    fair: '#f59e0b',
+                    good: '#3b82f6',
+                    strong: '#10b981'
+                };
+                return colors[strength] || '#707d86';
+            }
+
+            updateSubmitButton() {
+                const button = document.getElementById('signupBtn');
+                const allValid = Object.values(this.validationState).every(valid => valid);
+                button.disabled = !allValid;
+            }
+
+            async handleSignup(event) {
+                event.preventDefault();
+
+                const formData = {
+                    username: document.getElementById('username').value.trim(),
+                    outlookId: document.getElementById('outlookId').value.trim(),
+                    rollNo: document.getElementById('rollNo').value.trim(),
+                    password: document.getElementById('password').value
+                };
+
+                // Final validation
+                const allValid = Object.values(this.validationState).every(valid => valid);
+                if (!allValid) {
+                    this.showError('Please fix all validation errors before submitting');
+                    return;
+                }
+
+                this.setLoading(true);
+                this.clearMessages();
+
+                try {
+                    const result = await this.api.signup(formData);
+
+                    if (result.success) {
+                        this.handleSignupSuccess(result);
+                    } else {
+                        this.showError(result.message);
+                    }
+                } catch (error) {
+                    this.showError('An unexpected error occurred');
+                    console.error('Signup error:', error);
+                } finally {
+                    this.setLoading(false);
+                }
+            }
+
+            handleSignupSuccess(result) {
+                this.showSuccess(result.message);
+
+                // Redirect after successful signup
+                setTimeout(() => {
+                    // Replace with our actual redirect URL
+                    window.location.href = '/login';
+                }, 2000);
+            }
+
+            setLoading(isLoading) {
+                const button = document.getElementById('signupBtn');
+                const spinner = document.getElementById('loadingSpinner');
+                const buttonText = document.getElementById('buttonText');
+
+                if (isLoading) {
+                    button.disabled = true;
+                    spinner.style.display = 'inline-block';
+                    buttonText.textContent = 'CREATING ACCOUNT...';
+                } else {
+                    spinner.style.display = 'none';
+                    buttonText.textContent = 'CREATE ACCOUNT';
+                    this.updateSubmitButton(); // Restore proper disabled state
+                }
+            }
+
+            showError(message) {
+                const errorDiv = document.getElementById('errorMessage');
+                errorDiv.textContent = message;
+                errorDiv.style.display = 'block';
+                setTimeout(() => this.clearMessages(), 7000);
+            }
+
+            showSuccess(message) {
+                const successDiv = document.getElementById('successMessage');
+                successDiv.textContent = message;
+                successDiv.style.display = 'block';
+            }
+
+            clearMessages() {
+                document.getElementById('errorMessage').style.display = 'none';
+                document.getElementById('successMessage').style.display = 'none';
+            }
+        }
+
+        // Initialize the signup system
+        document.addEventListener('DOMContentLoaded', () => {
+            new SignupManager();
+        });
+
+    </script>
+</body>
+
+</html>

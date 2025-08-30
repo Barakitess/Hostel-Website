@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Member Login</title>
+    <style>
+        :root {
+            --bg-color: #f5f7fb;
+            --form-bg: #ffffff;
+            --muted-text: #707d86;
+            --text-color: #333333;
+            --primary-color: #3b82f6;
+            --primary-text: #ffffff;
+            --ghost-bg: transparent;
+            --ghost-text: #707d86;
+            --gradient-start: #3b82f6;
+            --gradient-end: #06b6d4;
+            --font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        .login-container {
+            background: var(--form-bg);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .login-title {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 40px;
+        }
+
+        .input-group {
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 16px 20px 16px 50px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: var(--font-family);
+            background: var(--form-bg);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .input-field:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .input-field::placeholder {
+            color: var(--muted-text);
+            font-weight: 400;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--muted-text);
+            font-size: 18px;
+            pointer-events: none;
+            z-index: 10;
+            transition: color 0.3s ease;
+        }
+
+        .input-field:focus+.input-icon {
+            color: var(--primary-color);
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--muted-text);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 4px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            z-index: 10;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .password-toggle:hover {
+            color: var(--primary-color);
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .password-toggle:focus {
+            outline: none;
+            color: var(--primary-color);
+        }
+
+        .password-toggle svg {
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .forgot-password-section {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 32px;
+        }
+
+        .forgot-password {
+            color: var(--muted-text);
+            text-decoration: none;
+            font-style: italic;
+            font-size: 14px;
+            transition: color 0.3s ease;
+        }
+
+        .forgot-password:hover {
+            color: var(--primary-color);
+        }
+
+        .login-button {
+            width: 100%;
+            background: var(--primary-color);
+            color: var(--primary-text);
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            font-family: var(--font-family);
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-button:hover {
+            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .login-button:active {
+            transform: translateY(0);
+        }
+
+        .login-button:disabled {
+            background: var(--muted-text);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .signup-section {
+            text-align: center;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .signup-text {
+            color: var(--muted-text);
+            font-size: 14px;
+            font-family: var(--font-family);
+        }
+
+        .signup-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            margin-left: 4px;
+        }
+
+        .signup-link:hover {
+            color: var(--gradient-end);
+            text-decoration: underline;
+        }
+
+        .error-message {
+            color: #ef4444;
+            font-size: 14px;
+            margin-top: 8px;
+            padding: 8px 12px;
+            background: rgba(239, 68, 68, 0.1);
+            border-radius: 6px;
+            display: none;
+        }
+
+        .success-message {
+            color: #10b981;
+            font-size: 14px;
+            margin-top: 8px;
+            padding: 8px 12px;
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 6px;
+            display: none;
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Icons using Unicode symbols */
+        .user-icon::before {
+            content: "👤";
+        }
+
+        .lock-icon::before {
+            content: "🔒";
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                margin: 20px;
+                padding: 30px 25px;
+            }
+
+            .login-title {
+                font-size: 24px;
+                margin-bottom: 30px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-container">
+        <h1 class="login-title">Member Login</h1>
+
+        <form id="loginForm">
+            <div class="input-group">
+                <input type="text" id="username" class="input-field" placeholder="Username" required>
+                <div class="input-icon user-icon"></div>
+            </div>
+
+            <div class="input-group">
+                <input type="password" id="password" class="input-field" placeholder="Password" required>
+                <div class="input-icon lock-icon"></div>
+                <button type="button" class="password-toggle" id="passwordToggle" title="Show Password">
+                    <svg id="eyeIcon" viewBox="0 0 24 24">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                        <circle cx="12" cy="12" r="3" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="forgot-password-section">
+                <a href="#" class="forgot-password">Forgot Password?</a>
+            </div>
+
+            <button type="submit" class="login-button" id="loginBtn">
+                <span class="loading-spinner" id="loadingSpinner"></span>
+                <span id="buttonText">LOGIN</span>
+            </button>
+
+            <div class="error-message" id="errorMessage"></div>
+            <div class="success-message" id="successMessage"></div>
+        </form>
+
+        <div class="signup-section">
+            <span class="signup-text">Don't have an account? </span>
+            <a href="#" class="signup-link">Sign up</a>
+        </div>
+    </div>
+
+    <script>
+        class LoginAPI {
+            constructor() {
+                // Replace with actual API base URL
+                this.baseURL = 'https://your-api-domain.com/api';
+            }
+
+            async login(credentials) {
+                try {
+                    const response = await fetch(`${this.baseURL}/auth/login`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(credentials)
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        return {
+                            success: true,
+                            user: data.user,
+                            token: data.token
+                        };
+                    } else {
+                        return {
+                            success: false,
+                            message: data.message || 'Login failed'
+                        };
+                    }
+                } catch (error) {
+                    console.error('Login API Error:', error);
+                    return {
+                        success: false,
+                        message: 'Network error. Please try again.'
+                    };
+                }
+            }
+        }
+
+        class LoginManager {
+            constructor() {
+                this.api = new LoginAPI();
+                this.initializeEventListeners();
+            }
+
+            initializeEventListeners() {
+                const form = document.getElementById('loginForm');
+                const inputs = document.querySelectorAll('.input-field');
+                const passwordToggle = document.getElementById('passwordToggle');
+                const passwordField = document.getElementById('password');
+
+                form.addEventListener('submit', (e) => this.handleLogin(e));
+
+                // Password toggle functionality
+                passwordToggle.addEventListener('click', () => {
+                    const eyeIcon = document.getElementById('eyeIcon');
+
+                    if (passwordField.type === 'password') {
+                        passwordField.type = 'text';
+                        passwordToggle.title = 'Hide Password';
+                        // Change to eye-off icon
+                        eyeIcon.innerHTML = `
+                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                            <line x1="1" y1="1" x2="23" y2="23"/>
+                        `;
+                    } else {
+                        passwordField.type = 'password';
+                        passwordToggle.title = 'Show Password';
+                        // Change to eye icon
+                        eyeIcon.innerHTML = `
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        `;
+                    }
+                });
+
+                inputs.forEach(input => {
+                    input.addEventListener('focus', function () {
+                        this.style.transform = 'scale(1.01)';
+                    });
+
+                    input.addEventListener('blur', function () {
+                        this.style.transform = 'scale(1)';
+                    });
+                });
+
+                // Clear error messages on input
+                inputs.forEach(input => {
+                    input.addEventListener('input', () => this.clearMessages());
+                });
+            }
+
+            async handleLogin(event) {
+                event.preventDefault();
+
+                const username = document.getElementById('username').value.trim();
+                const password = document.getElementById('password').value;
+
+                if (!username || !password) {
+                    this.showError('Please fill in all fields');
+                    return;
+                }
+
+                this.setLoading(true);
+                this.clearMessages();
+
+                try {
+                    const result = await this.api.login({ username, password });
+
+                    if (result.success) {
+                        this.handleLoginSuccess(result);
+                    } else {
+                        this.showError(result.message);
+                    }
+                } catch (error) {
+                    this.showError('An unexpected error occurred');
+                    console.error('Login error:', error);
+                } finally {
+                    this.setLoading(false);
+                }
+            }
+
+            handleLoginSuccess(result) {
+                // Store authentication data
+                sessionStorage.setItem('authToken', result.token);
+                sessionStorage.setItem('user', JSON.stringify(result.user));
+
+                this.showSuccess(`Welcome back, ${result.user.name || result.user.username}!`);
+
+                // Redirect after successful login
+                setTimeout(() => {
+                    // Replace with our actual redirect URL
+                    window.location.href = '/dashboard';
+                }, 1500);
+            }
+
+            setLoading(isLoading) {
+                const button = document.getElementById('loginBtn');
+                const spinner = document.getElementById('loadingSpinner');
+                const buttonText = document.getElementById('buttonText');
+
+                if (isLoading) {
+                    button.disabled = true;
+                    spinner.style.display = 'inline-block';
+                    buttonText.textContent = 'LOGGING IN...';
+                } else {
+                    button.disabled = false;
+                    spinner.style.display = 'none';
+                    buttonText.textContent = 'LOGIN';
+                }
+            }
+
+            showError(message) {
+                const errorDiv = document.getElementById('errorMessage');
+                errorDiv.textContent = message;
+                errorDiv.style.display = 'block';
+                setTimeout(() => this.clearMessages(), 5000);
+            }
+
+            showSuccess(message) {
+                const successDiv = document.getElementById('successMessage');
+                successDiv.textContent = message;
+                successDiv.style.display = 'block';
+            }
+
+            clearMessages() {
+                document.getElementById('errorMessage').style.display = 'none';
+                document.getElementById('successMessage').style.display = 'none';
+            }
+        }
+
+        // Initialize the login system
+        document.addEventListener('DOMContentLoaded', () => {
+            new LoginManager();
+        });
+    </script>
+</body>
+
+</html>
