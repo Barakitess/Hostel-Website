@@ -44,3 +44,20 @@ class UserService:
             raise ValueError("Invalid username or password")
 
         return user
+
+    @staticmethod
+    def update_user(username, update_data: dict):
+        # Validate block if provided
+        if "block" in update_data and update_data["block"] not in Block.choices():
+            raise ValueError(f"Invalid block: {update_data['block']}")
+
+        # Validate role if provided
+        if "role" in update_data and update_data["role"] not in UserRole.choices():
+            raise ValueError(f"Invalid role: {update_data['role']}")
+
+        updated_user = UserRepository.update_user(username, update_data)
+        if not updated_user:
+            raise ValueError("User not found")
+
+        return updated_user
+

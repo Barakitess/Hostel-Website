@@ -54,3 +54,27 @@ class LoginView(APIView):
             "username": user.username,
             "role": user.role
         }, status=status.HTTP_200_OK)
+
+class UpdateUserView(APIView):
+    def put(self, request, username):
+        try:
+            update_data = request.data
+            updated_user = UserService.update_user(username, update_data)
+
+            return Response({
+                "message": "User updated successfully",
+                "user": {
+                    "username": updated_user.username,
+                    "email": updated_user.email,
+                    "hostel": updated_user.hostel,
+                    "block": updated_user.block,
+                    "room_number": updated_user.room_number,
+                    "phone_number": updated_user.phone_number,
+                    "role": updated_user.role,
+                }
+            }, status=status.HTTP_200_OK)
+
+        except ValueError as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
