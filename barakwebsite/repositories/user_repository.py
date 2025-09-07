@@ -23,3 +23,12 @@ class UserRepository:
     @staticmethod
     def get_by_email(email):
         return User.objects(email=email).first()
+
+    @staticmethod
+    def update_user(username: str, update_data: dict):
+        user = User.objects(username=username).first()
+        if not user:
+            return None
+        user.update(**update_data)
+        user.reload()  # refresh with updated data
+        return user
