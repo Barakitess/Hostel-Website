@@ -1,6 +1,6 @@
 from barakwebsite.repositories.user_repository import UserRepository
 from barakwebsite.models.enums import UserRole, Block
-from werkzeug.security import generate_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
 
 class UserService:
     @staticmethod
@@ -33,3 +33,14 @@ class UserService:
             phone_number=phone_number,
             role=role,
         )
+
+    @staticmethod
+    def login(username, password):
+        user = UserRepository.get_by_username(username)
+        if not user:
+            raise ValueError("Invalid username or password")
+
+        if not check_password_hash(user.password_hash, password):
+            raise ValueError("Invalid username or password")
+
+        return user
